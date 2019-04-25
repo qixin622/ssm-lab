@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.lab.dao.WorkloadVoMapper">
+  <resultMap id="BaseResultMap" type="com.ssm.lab.dto.WorkloadVo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="term" property="term" jdbcType="VARCHAR"/>
+    <result column="workload_type" property="workloadType" jdbcType="VARCHAR"/>
+    <result column="cno" property="cno" jdbcType="VARCHAR"/>
+    <result column="cname" property="cname" jdbcType="VARCHAR"/>
+    <result column="teacher_sn" property="teacherSn" jdbcType="VARCHAR"/>
+    <result column="userName" property="userName" jdbcType="VARCHAR"/>
+    <result column="teacher_workload" property="teacherWorkload" jdbcType="VARCHAR"/>
+  </resultMap>
+
+
+  <select id="selectAllTerm" resultType="String">
+    select term from tb_experiment_workload
+    union
+    select term from tb_practice_workload
+    order by term desc
+  </select>
+
+  <select id="selectByExperimentCondition" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    w.id,term,workload_type,cno,cname,teacher_sn,userName,teacher_workload
+    from tb_experiment_workload w left join tb_experiment_workload_item wi
+    on w.id=wi.experiment_workload_id
+    left join tb_course c on w.cid=c.id
+    left join tb_user u on wi.teacher_sn=u.sn
+    <where>
+      <if test="term != null">
+        term=#{term}
+      </if>
+      <if test="workloadType != null">
+        and workload_type=#{workloadType}
+      </if>
+      <if test="type != null and keywords != null">
+        <if test="type == 'sn'">
+          and teacher_sn LIKE CONCAT('%',#{keywords},'%')
+        </if>
+        <if test="type == 'username'">
+          and userName LIKE CONCAT('%',#{keywords},'%')
+        </if>
+      </if>
+    </where>
+    order by id
+  </select>
+
+  <select id="selectByPracticeCondition" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    w.id,term,workload_type,cno,cname,teacher_sn,userName,teacher_workload
+    from tb_practice_workload w left join tb_practice_workload_item wi
+    on w.id=wi.practice_workload_id
+    left join tb_practice_course c on w.cid=c.id
+    left join tb_user u on wi.teacher_sn=u.sn
+    <where>
+      <if test="term != null">
+        term=#{term}
+      </if>
+      <if test="workloadType != null">
+        and workload_type=#{workloadType}
+      </if>
+      <if test="type != null and keywords != null">
+        <if test="type == 'sn'">
+          and teacher_sn LIKE CONCAT('%',#{keywords},'%')
+        </if>
+        <if test="type == 'username'">
+          and userName LIKE CONCAT('%',#{keywords},'%')
+        </if>
+      </if>
+    </where>
+    order by id
+  </select>
+</mapper>

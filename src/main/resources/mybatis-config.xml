@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!--使用JDBC的getGeneratedKeys获取自增主键-->
+        <setting name="useGeneratedKeys" value="true"/>
+        <setting name="useColumnLabel" value="true"/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--&lt;!&ndash; 全局性设置懒加载。如果设为‘false'，则所有相关联的都会被初始化加载。 &ndash;&gt;-->
+        <!--&lt;!&ndash;懒加载需引入asm-3.3.1.jar和cglib-2.2.2.jar包，否则会报错&ndash;&gt;-->
+        <!--<setting name="lazyLoadingEnabled" value="true"/>-->
+        <!--&lt;!&ndash; 当设置为‘true'的时候，懒加载的对象可能被任何懒属性全部加载。否则，每个属性都按需加载。 &ndash;&gt;-->
+        <!--<setting name="aggressiveLazyLoading" value="false"/>-->
+    </settings>
+
+    <typeAliases>
+        <package name="com.ssm.lab.entity"/>
+    </typeAliases>
+
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!--分页参数合理化  -->
+            <property name="reasonable" value="true"/>
+        </plugin>
+    </plugins>
+</configuration>

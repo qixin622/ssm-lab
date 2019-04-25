@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.lab.dao.PracticeWorkloadItemMapper">
+  <resultMap id="BaseResultMap" type="com.ssm.lab.bean.PracticeWorkloadItem">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="practice_workload_id" jdbcType="INTEGER" property="practiceWorkloadId" />
+    <result column="teacher_sn" jdbcType="CHAR" property="teacherSn" />
+    <result column="teacher_workload_rate" jdbcType="TINYINT" property="teacherWorkloadRate" />
+    <result column="teacher_workload" jdbcType="DOUBLE" property="teacherWorkload" />
+    <association property="teacher" column="teacher_sn" javaType="com.ssm.lab.bean.User">
+      <result property="userName" column="userName" javaType="String"/>
+    </association>
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, practice_workload_id, teacher_sn, teacher_workload_rate, teacher_workload
+  </sql>
+  <select id="selectByExample" parameterType="com.ssm.lab.bean.PracticeWorkloadItemExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,userName
+    from tb_practice_workload_item w
+    left join tb_user u on w.teacher_sn=u.sn
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    ,userName
+    from tb_practice_workload_item w
+    left join tb_user u on w.teacher_sn=u.sn
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByPracticeWorkloadId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    ,userName
+    from tb_practice_workload_item w
+    left join tb_user u on w.teacher_sn=u.sn
+    where practice_workload_id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_practice_workload_item
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.ssm.lab.bean.PracticeWorkloadItemExample">
+    delete from tb_practice_workload_item
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.ssm.lab.bean.PracticeWorkloadItem">
+    insert into tb_practice_workload_item (id, practice_workload_id, teacher_sn, 
+      teacher_workload_rate, teacher_workload)
+    values (#{id,jdbcType=INTEGER}, #{practiceWorkloadId,jdbcType=INTEGER}, #{teacherSn,jdbcType=CHAR}, 
+      #{teacherWorkloadRate,jdbcType=TINYINT}, #{teacherWorkload,jdbcType=DOUBLE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ssm.lab.bean.PracticeWorkloadItem">
+    insert into tb_practice_workload_item
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="practiceWorkloadId != null">
+        practice_workload_id,
+      </if>
+      <if test="teacherSn != null">
+        teacher_sn,
+      </if>
+      <if test="teacherWorkloadRate != null">
+        teacher_workload_rate,
+      </if>
+      <if test="teacherWorkload != null">
+        teacher_workload,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="practiceWorkloadId != null">
+        #{practiceWorkloadId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherSn != null">
+        #{teacherSn,jdbcType=CHAR},
+      </if>
+      <if test="teacherWorkloadRate != null">
+        #{teacherWorkloadRate,jdbcType=TINYINT},
+      </if>
+      <if test="teacherWorkload != null">
+        #{teacherWorkload,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.ssm.lab.bean.PracticeWorkloadItemExample" resultType="java.lang.Long">
+    select count(*) from tb_practice_workload_item
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_practice_workload_item
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.practiceWorkloadId != null">
+        practice_workload_id = #{record.practiceWorkloadId,jdbcType=INTEGER},
+      </if>
+      <if test="record.teacherSn != null">
+        teacher_sn = #{record.teacherSn,jdbcType=CHAR},
+      </if>
+      <if test="record.teacherWorkloadRate != null">
+        teacher_workload_rate = #{record.teacherWorkloadRate,jdbcType=TINYINT},
+      </if>
+      <if test="record.teacherWorkload != null">
+        teacher_workload = #{record.teacherWorkload,jdbcType=DOUBLE},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_practice_workload_item
+    set id = #{record.id,jdbcType=INTEGER},
+      practice_workload_id = #{record.practiceWorkloadId,jdbcType=INTEGER},
+      teacher_sn = #{record.teacherSn,jdbcType=CHAR},
+      teacher_workload_rate = #{record.teacherWorkloadRate,jdbcType=TINYINT},
+      teacher_workload = #{record.teacherWorkload,jdbcType=DOUBLE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ssm.lab.bean.PracticeWorkloadItem">
+    update tb_practice_workload_item
+    <set>
+      <if test="practiceWorkloadId != null">
+        practice_workload_id = #{practiceWorkloadId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherSn != null">
+        teacher_sn = #{teacherSn,jdbcType=CHAR},
+      </if>
+      <if test="teacherWorkloadRate != null">
+        teacher_workload_rate = #{teacherWorkloadRate,jdbcType=TINYINT},
+      </if>
+      <if test="teacherWorkload != null">
+        teacher_workload = #{teacherWorkload,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ssm.lab.bean.PracticeWorkloadItem">
+    update tb_practice_workload_item
+    set practice_workload_id = #{practiceWorkloadId,jdbcType=INTEGER},
+      teacher_sn = #{teacherSn,jdbcType=CHAR},
+      teacher_workload_rate = #{teacherWorkloadRate,jdbcType=TINYINT},
+      teacher_workload = #{teacherWorkload,jdbcType=DOUBLE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

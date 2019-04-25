@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.lab.dao.BorrowMapper">
+  <resultMap id="BaseResultMap" type="com.ssm.lab.bean.Borrow">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="num" jdbcType="TINYINT" property="num" />
+    <result column="unit" jdbcType="CHAR" property="unit" />
+    <result column="borrow_time" jdbcType="TIMESTAMP" property="borrowTime" />
+    <result column="return_time" jdbcType="TIMESTAMP" property="returnTime" />
+    <result column="borrow_sn" jdbcType="CHAR" property="borrowSn" />
+    <result column="borrow_handle_sn" jdbcType="CHAR" property="borrowHandleSn" />
+    <result column="return_handle_sn" jdbcType="CHAR" property="returnHandleSn" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="flag" jdbcType="CHAR" property="flag" />
+    <association property="borrower" column="borrow_sn" javaType="com.ssm.lab.bean.User">
+      <result property="userName" column="borrowName" javaType="String"/>
+    </association>
+    <association property="borrowHandler" column="borrow_handle_sn" javaType="com.ssm.lab.bean.User">
+      <result property="userName" column="borrowHandleName" javaType="String"/>
+    </association>
+    <association property="returnHanlder" column="return_handle_sn" javaType="com.ssm.lab.bean.User">
+      <result property="userName" column="returnHandleName" javaType="String"/>
+    </association>
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, name, num, unit, borrow_time, return_time, borrow_sn, borrow_handle_sn, return_handle_sn, 
+    remarks, flag
+  </sql>
+  <select id="selectByExample" parameterType="com.ssm.lab.bean.BorrowExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,bu.userName borrowName, bhu.userName borrowHandleName, rhu.userName returnHandleName
+    from tb_borrow b left join tb_user bu on b.borrow_sn=bu.sn
+    left join tb_user bhu on b.borrow_handle_sn=bhu.sn
+    left join tb_user rhu on b.return_handle_sn=rhu.sn
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    ,bu.userName borrowName, bhu.userName borrowHandleName, rhu.userName returnHandleName
+    from tb_borrow b left join tb_user bu on b.borrow_sn=bu.sn
+    left join tb_user bhu on b.borrow_handle_sn=bhu.sn
+    left join tb_user rhu on b.return_handle_sn=rhu.sn
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_borrow
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.ssm.lab.bean.BorrowExample">
+    delete from tb_borrow
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.ssm.lab.bean.Borrow">
+    insert into tb_borrow (id, name, num, 
+      unit, borrow_time, return_time, 
+      borrow_sn, borrow_handle_sn, return_handle_sn, 
+      remarks, flag)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{num,jdbcType=TINYINT}, 
+      #{unit,jdbcType=CHAR}, #{borrowTime,jdbcType=TIMESTAMP}, #{returnTime,jdbcType=TIMESTAMP}, 
+      #{borrowSn,jdbcType=CHAR}, #{borrowHandleSn,jdbcType=CHAR}, #{returnHandleSn,jdbcType=CHAR}, 
+      #{remarks,jdbcType=VARCHAR}, #{flag,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ssm.lab.bean.Borrow">
+    insert into tb_borrow
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="unit != null">
+        unit,
+      </if>
+      <if test="borrowTime != null">
+        borrow_time,
+      </if>
+      <if test="returnTime != null">
+        return_time,
+      </if>
+      <if test="borrowSn != null">
+        borrow_sn,
+      </if>
+      <if test="borrowHandleSn != null">
+        borrow_handle_sn,
+      </if>
+      <if test="returnHandleSn != null">
+        return_handle_sn,
+      </if>
+      <if test="remarks != null">
+        remarks,
+      </if>
+      <if test="flag != null">
+        flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=TINYINT},
+      </if>
+      <if test="unit != null">
+        #{unit,jdbcType=CHAR},
+      </if>
+      <if test="borrowTime != null">
+        #{borrowTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnTime != null">
+        #{returnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="borrowSn != null">
+        #{borrowSn,jdbcType=CHAR},
+      </if>
+      <if test="borrowHandleSn != null">
+        #{borrowHandleSn,jdbcType=CHAR},
+      </if>
+      <if test="returnHandleSn != null">
+        #{returnHandleSn,jdbcType=CHAR},
+      </if>
+      <if test="remarks != null">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null">
+        #{flag,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.ssm.lab.bean.BorrowExample" resultType="java.lang.Long">
+    select count(*) from tb_borrow
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_borrow
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.num != null">
+        num = #{record.num,jdbcType=TINYINT},
+      </if>
+      <if test="record.unit != null">
+        unit = #{record.unit,jdbcType=CHAR},
+      </if>
+      <if test="record.borrowTime != null">
+        borrow_time = #{record.borrowTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.returnTime != null">
+        return_time = #{record.returnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.borrowSn != null">
+        borrow_sn = #{record.borrowSn,jdbcType=CHAR},
+      </if>
+      <if test="record.borrowHandleSn != null">
+        borrow_handle_sn = #{record.borrowHandleSn,jdbcType=CHAR},
+      </if>
+      <if test="record.returnHandleSn != null">
+        return_handle_sn = #{record.returnHandleSn,jdbcType=CHAR},
+      </if>
+      <if test="record.remarks != null">
+        remarks = #{record.remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="record.flag != null">
+        flag = #{record.flag,jdbcType=CHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_borrow
+    set id = #{record.id,jdbcType=INTEGER},
+      name = #{record.name,jdbcType=VARCHAR},
+      num = #{record.num,jdbcType=TINYINT},
+      unit = #{record.unit,jdbcType=CHAR},
+      borrow_time = #{record.borrowTime,jdbcType=TIMESTAMP},
+      return_time = #{record.returnTime,jdbcType=TIMESTAMP},
+      borrow_sn = #{record.borrowSn,jdbcType=CHAR},
+      borrow_handle_sn = #{record.borrowHandleSn,jdbcType=CHAR},
+      return_handle_sn = #{record.returnHandleSn,jdbcType=CHAR},
+      remarks = #{record.remarks,jdbcType=VARCHAR},
+      flag = #{record.flag,jdbcType=CHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ssm.lab.bean.Borrow">
+    update tb_borrow
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=TINYINT},
+      </if>
+      <if test="unit != null">
+        unit = #{unit,jdbcType=CHAR},
+      </if>
+      <if test="borrowTime != null">
+        borrow_time = #{borrowTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnTime != null">
+        return_time = #{returnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="borrowSn != null">
+        borrow_sn = #{borrowSn,jdbcType=CHAR},
+      </if>
+      <if test="borrowHandleSn != null">
+        borrow_handle_sn = #{borrowHandleSn,jdbcType=CHAR},
+      </if>
+      <if test="returnHandleSn != null">
+        return_handle_sn = #{returnHandleSn,jdbcType=CHAR},
+      </if>
+      <if test="remarks != null">
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null">
+        flag = #{flag,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ssm.lab.bean.Borrow">
+    update tb_borrow
+    set name = #{name,jdbcType=VARCHAR},
+      num = #{num,jdbcType=TINYINT},
+      unit = #{unit,jdbcType=CHAR},
+      borrow_time = #{borrowTime,jdbcType=TIMESTAMP},
+      return_time = #{returnTime,jdbcType=TIMESTAMP},
+      borrow_sn = #{borrowSn,jdbcType=CHAR},
+      borrow_handle_sn = #{borrowHandleSn,jdbcType=CHAR},
+      return_handle_sn = #{returnHandleSn,jdbcType=CHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      flag = #{flag,jdbcType=CHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select distinct
+    <include refid="Base_Column_List" />
+    ,bu.userName borrowName, bhu.userName borrowHandleName, rhu.userName returnHandleName
+    from tb_borrow b left join tb_user bu on b.borrow_sn=bu.sn
+    left join tb_user bhu on b.borrow_handle_sn=bhu.sn
+    left join tb_user rhu on b.return_handle_sn=rhu.sn
+    <if test="type != null and keywords != null">
+      <if test="type == 'name'">
+        where b.name LIKE CONCAT('%',#{keywords},'%')
+      </if>
+      <if test="type == 'borrowName'">
+        where bu.userName LIKE CONCAT('%',#{keywords},'%')
+      </if>
+      <if test="type == 'borrowHandleName'">
+        where bhu.userName LIKE CONCAT('%',#{keywords},'%')
+      </if>
+      <if test="type == 'returnHandleName'">
+        where rhu.userName LIKE CONCAT('%',#{keywords},'%')
+      </if>
+      <if test="type == 'flag' and keywords == '已归还'">
+        where flag = 1
+      </if>
+      <if test="type == 'flag' and keywords == '未归还'">
+        where flag = 0
+      </if>
+    </if>
+    order by id desc
+  </select>
+</mapper>

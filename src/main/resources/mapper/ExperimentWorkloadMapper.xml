@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.lab.dao.ExperimentWorkloadMapper">
+  <resultMap id="BaseResultMap" type="com.ssm.lab.bean.ExperimentWorkload">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="term" jdbcType="VARCHAR" property="term" />
+    <result column="workload_type" jdbcType="VARCHAR" property="workloadType" />
+    <result column="cid" jdbcType="INTEGER" property="cid" />
+    <result column="classes" jdbcType="VARCHAR" property="classes" />
+    <result column="stu_numbers" jdbcType="INTEGER" property="stuNumbers" />
+    <result column="class_numbers" jdbcType="DOUBLE" property="classNumbers" />
+    <result column="lab_workload" jdbcType="DOUBLE" property="labWorkload" />
+    <result column="pre_workload" jdbcType="DOUBLE" property="preWorkload" />
+    <result column="total_workload" jdbcType="DOUBLE" property="totalWorkload" />
+    <result column="deduct_pre_workload_rate" jdbcType="TINYINT" property="deductPreWorkloadRate" />
+    <result column="deduct_pre_workload" jdbcType="DOUBLE" property="deductPreWorkload" />
+    <association property="course" column="cid" javaType="com.ssm.lab.bean.Course">
+      <id column="cid" property="id" javaType="int"/>
+      <result column="cno" jdbcType="VARCHAR" property="cno" />
+      <result column="cname" jdbcType="VARCHAR" property="cname" />
+      <result column="property" jdbcType="VARCHAR" property="property" />
+      <result column="expperiod" jdbcType="TINYINT" property="expperiod" />
+    </association>
+    <collection property="items" javaType="ArrayList" column="id" ofType="com.ssm.lab.bean.ExperimentWorkloadItem"
+                select="com.ssm.lab.dao.ExperimentWorkloadItemMapper.selectByExperimentWorkloadId"/>
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, term, workload_type, cid, classes, stu_numbers, class_numbers, lab_workload, 
+    pre_workload, total_workload, deduct_pre_workload_rate, deduct_pre_workload
+  </sql>
+
+  <select id="selectByExample" parameterType="com.ssm.lab.bean.ExperimentWorkloadExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    w.id, term, workload_type, cid, classes, stu_numbers, class_numbers, lab_workload,
+    pre_workload, total_workload, deduct_pre_workload_rate, deduct_pre_workload
+    ,c.cno,c.cname,c.property,c.expperiod
+    from tb_experiment_workload w
+    left join tb_course c on w.cid=c.id
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    w.id, term, workload_type, cid, classes, stu_numbers, class_numbers, lab_workload,
+    pre_workload, total_workload, deduct_pre_workload_rate, deduct_pre_workload
+    ,c.cno,c.cname,c.property,c.expperiod
+    from tb_experiment_workload w
+    left join tb_course c on w.cid=c.id
+    where w.id = #{id,jdbcType=INTEGER}
+  </select>
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_experiment_workload
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.ssm.lab.bean.ExperimentWorkloadExample">
+    delete from tb_experiment_workload
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.ssm.lab.bean.ExperimentWorkload">
+    insert into tb_experiment_workload (term, workload_type,
+      cid, classes, stu_numbers, 
+      class_numbers, lab_workload, pre_workload, 
+      total_workload, deduct_pre_workload_rate, deduct_pre_workload
+      )
+    values (#{term,jdbcType=VARCHAR}, #{workloadType,jdbcType=VARCHAR},
+      #{cid,jdbcType=INTEGER}, #{classes,jdbcType=VARCHAR}, #{stuNumbers,jdbcType=INTEGER}, 
+      #{classNumbers,jdbcType=DOUBLE}, #{labWorkload,jdbcType=DOUBLE}, #{preWorkload,jdbcType=DOUBLE},
+      #{totalWorkload,jdbcType=DOUBLE}, #{deductPreWorkloadRate,jdbcType=TINYINT}, #{deductPreWorkload,jdbcType=DOUBLE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ssm.lab.bean.ExperimentWorkload">
+    insert into tb_experiment_workload
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="term != null">
+        term,
+      </if>
+      <if test="workloadType != null">
+        workload_type,
+      </if>
+      <if test="cid != null">
+        cid,
+      </if>
+      <if test="classes != null">
+        classes,
+      </if>
+      <if test="stuNumbers != null">
+        stu_numbers,
+      </if>
+      <if test="classNumbers != null">
+        class_numbers,
+      </if>
+      <if test="labWorkload != null">
+        lab_workload,
+      </if>
+      <if test="preWorkload != null">
+        pre_workload,
+      </if>
+      <if test="totalWorkload != null">
+        total_workload,
+      </if>
+      <if test="deductPreWorkloadRate != null">
+        deduct_pre_workload_rate,
+      </if>
+      <if test="deductPreWorkload != null">
+        deduct_pre_workload,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="term != null">
+        #{term,jdbcType=VARCHAR},
+      </if>
+      <if test="workloadType != null">
+        #{workloadType,jdbcType=VARCHAR},
+      </if>
+      <if test="cid != null">
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="classes != null">
+        #{classes,jdbcType=VARCHAR},
+      </if>
+      <if test="stuNumbers != null">
+        #{stuNumbers,jdbcType=INTEGER},
+      </if>
+      <if test="classNumbers != null">
+        #{classNumbers,jdbcType=DOUBLE},
+      </if>
+      <if test="labWorkload != null">
+        #{labWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="preWorkload != null">
+        #{preWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="totalWorkload != null">
+        #{totalWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="deductPreWorkloadRate != null">
+        #{deductPreWorkloadRate,jdbcType=TINYINT},
+      </if>
+      <if test="deductPreWorkload != null">
+        #{deductPreWorkload,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.ssm.lab.bean.ExperimentWorkloadExample" resultType="java.lang.Long">
+    select count(*) from tb_experiment_workload
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_experiment_workload
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.term != null">
+        term = #{record.term,jdbcType=VARCHAR},
+      </if>
+      <if test="record.workloadType != null">
+        workload_type = #{record.workloadType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cid != null">
+        cid = #{record.cid,jdbcType=INTEGER},
+      </if>
+      <if test="record.classes != null">
+        classes = #{record.classes,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuNumbers != null">
+        stu_numbers = #{record.stuNumbers,jdbcType=INTEGER},
+      </if>
+      <if test="record.classNumbers != null">
+        class_numbers = #{record.classNumbers,jdbcType=DOUBLE},
+      </if>
+      <if test="record.labWorkload != null">
+        lab_workload = #{record.labWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="record.preWorkload != null">
+        pre_workload = #{record.preWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="record.totalWorkload != null">
+        total_workload = #{record.totalWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="record.deductPreWorkloadRate != null">
+        deduct_pre_workload_rate = #{record.deductPreWorkloadRate,jdbcType=TINYINT},
+      </if>
+      <if test="record.deductPreWorkload != null">
+        deduct_pre_workload = #{record.deductPreWorkload,jdbcType=DOUBLE},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_experiment_workload
+    set id = #{record.id,jdbcType=INTEGER},
+      term = #{record.term,jdbcType=VARCHAR},
+      workload_type = #{record.workloadType,jdbcType=VARCHAR},
+      cid = #{record.cid,jdbcType=INTEGER},
+      classes = #{record.classes,jdbcType=VARCHAR},
+      stu_numbers = #{record.stuNumbers,jdbcType=INTEGER},
+      class_numbers = #{record.classNumbers,jdbcType=DOUBLE},
+      lab_workload = #{record.labWorkload,jdbcType=DOUBLE},
+      pre_workload = #{record.preWorkload,jdbcType=DOUBLE},
+      total_workload = #{record.totalWorkload,jdbcType=DOUBLE},
+      deduct_pre_workload_rate = #{record.deductPreWorkloadRate,jdbcType=TINYINT},
+      deduct_pre_workload = #{record.deductPreWorkload,jdbcType=DOUBLE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ssm.lab.bean.ExperimentWorkload">
+    update tb_experiment_workload
+    <set>
+      <if test="term != null">
+        term = #{term,jdbcType=VARCHAR},
+      </if>
+      <if test="workloadType != null">
+        workload_type = #{workloadType,jdbcType=VARCHAR},
+      </if>
+      <if test="cid != null">
+        cid = #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="classes != null">
+        classes = #{classes,jdbcType=VARCHAR},
+      </if>
+      <if test="stuNumbers != null">
+        stu_numbers = #{stuNumbers,jdbcType=INTEGER},
+      </if>
+      <if test="classNumbers != null">
+        class_numbers = #{classNumbers,jdbcType=DOUBLE},
+      </if>
+      <if test="labWorkload != null">
+        lab_workload = #{labWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="preWorkload != null">
+        pre_workload = #{preWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="totalWorkload != null">
+        total_workload = #{totalWorkload,jdbcType=DOUBLE},
+      </if>
+      <if test="deductPreWorkloadRate != null">
+        deduct_pre_workload_rate = #{deductPreWorkloadRate,jdbcType=TINYINT},
+      </if>
+      <if test="deductPreWorkload != null">
+        deduct_pre_workload = #{deductPreWorkload,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ssm.lab.bean.ExperimentWorkload">
+    update tb_experiment_workload
+    set term = #{term,jdbcType=VARCHAR},
+      workload_type = #{workloadType,jdbcType=VARCHAR},
+      cid = #{cid,jdbcType=INTEGER},
+      classes = #{classes,jdbcType=VARCHAR},
+      stu_numbers = #{stuNumbers,jdbcType=INTEGER},
+      class_numbers = #{classNumbers,jdbcType=DOUBLE},
+      lab_workload = #{labWorkload,jdbcType=DOUBLE},
+      pre_workload = #{preWorkload,jdbcType=DOUBLE},
+      total_workload = #{totalWorkload,jdbcType=DOUBLE},
+      deduct_pre_workload_rate = #{deductPreWorkloadRate,jdbcType=TINYINT},
+      deduct_pre_workload = #{deductPreWorkload,jdbcType=DOUBLE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectAllTerm" resultType="String">
+    select distinct term from tb_experiment_workload order by term desc
+  </select>
+
+  <select id="selectByType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select distinct
+    w.id, term, workload_type, cid, classes, stu_numbers, class_numbers, lab_workload,
+    pre_workload, total_workload, deduct_pre_workload_rate, deduct_pre_workload
+    ,c.cno,c.cname,c.property,c.expperiod
+    from tb_experiment_workload w
+    left join tb_course c on w.cid=c.id
+    <where>
+      <if test="type != null and keywords != null">
+        <if test="type == 'cno'">
+          c.cno LIKE CONCAT('%',#{keywords},'%')
+        </if>
+        <if test="type == 'cname'">
+          c.cname LIKE CONCAT('%',#{keywords},'%')
+        </if>
+      </if>
+      <if test="term != null">
+        and term=#{term}
+      </if>
+      <if test="workloadType != null">
+        and workload_type=#{workloadType}
+      </if>
+    </where>
+    order by term desc,workload_type,id
+  </select>
+</mapper>

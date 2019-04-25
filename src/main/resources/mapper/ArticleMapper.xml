@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.lab.dao.ArticleMapper">
+  <resultMap id="BaseResultMap" type="com.ssm.lab.bean.Article">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="user_sn" jdbcType="CHAR" property="userSn" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="hints" jdbcType="INTEGER" property="hints" />
+    <result column="show_image" jdbcType="VARCHAR" property="showImage" />
+    <association property="category" column="category_id" javaType="com.ssm.lab.bean.Category">
+      <result property="categoryName" column="categoryName" javaType="String"/>
+    </association>
+    <association property="user" column="user_sn" javaType="com.ssm.lab.bean.User">
+      <result property="userName" column="userName" javaType="String"/>
+    </association>
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.ssm.lab.bean.Article">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, category_id, title, user_sn, create_time, update_time, hints, show_image, content
+  </sql>
+
+  <select id="selectByExampleWithBLOBs" parameterType="com.ssm.lab.bean.ArticleExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,userName, categoryName
+    from tb_article inner join tb_user on user_sn=sn left join tb_category on cid=category_id
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectByExample" parameterType="com.ssm.lab.bean.ArticleExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,userName, categoryName
+    from tb_article inner join tb_user on user_sn=sn left join tb_category on cid=category_id
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,userName, categoryName
+    from tb_article inner join tb_user on user_sn=sn left join tb_category on cid=category_id
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tb_article
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.ssm.lab.bean.ArticleExample">
+    delete from tb_article
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.ssm.lab.bean.Article">
+    insert into tb_article (<include refid="Base_Column_List" />)
+    values (#{id,jdbcType=BIGINT}, #{categoryId,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+      #{userSn,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{hints,jdbcType=INTEGER}, #{showImage,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ssm.lab.bean.Article">
+    insert into tb_article
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="categoryId != null">
+        category_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="userSn != null">
+        user_sn,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="hints != null">
+        hints,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="showImage != null">
+        show_image,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="categoryId != null">
+        #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="userSn != null">
+        #{userSn,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="hints != null">
+        #{hints,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="showImage != null">
+        #{showImage,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.ssm.lab.bean.ArticleExample" resultType="java.lang.Long">
+    select count(*) from tb_article
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_article
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.categoryId != null">
+        category_id = #{record.categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="record.title != null">
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userSn != null">
+        user_sn = #{record.userSn,jdbcType=CHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.hints != null">
+        hints = #{record.hints,jdbcType=INTEGER},
+      </if>
+      <if test="record.content != null">
+        content = #{record.content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.showImage != null">
+        show_image = #{record.showImage,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update tb_article
+    set id = #{record.id,jdbcType=BIGINT},
+      category_id = #{record.categoryId,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      user_sn = #{record.userSn,jdbcType=CHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      hints = #{record.hints,jdbcType=INTEGER},
+      content = #{record.content,jdbcType=LONGVARCHAR},
+      show_image = #{record.showImage,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_article
+    set id = #{record.id,jdbcType=BIGINT},
+      category_id = #{record.categoryId,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      user_sn = #{record.userSn,jdbcType=CHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      hints = #{record.hints,jdbcType=INTEGER},
+    show_image = #{record.showImage,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ssm.lab.bean.Article">
+    update tb_article
+    <set>
+      <if test="categoryId != null">
+        category_id = #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="userSn != null">
+        user_sn = #{userSn,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="hints != null">
+        hints = #{hints,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="showImage != null">
+        show_image = #{showImage,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.ssm.lab.bean.Article">
+    update tb_article
+    set category_id = #{categoryId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      user_sn = #{userSn,jdbcType=CHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      hints = #{hints,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR},
+      show_image = #{showImage,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ssm.lab.bean.Article">
+    update tb_article
+    set category_id = #{categoryId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      user_sn = #{userSn,jdbcType=CHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      hints = #{hints,jdbcType=INTEGER},
+      show_image = #{showImage,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByType" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select distinct
+    <include refid="Base_Column_List" />
+    ,userName, categoryName
+    from tb_article inner join tb_user on user_sn=sn left join tb_category on cid=category_id
+    where ${type} LIKE CONCAT('%',#{keywords},'%')
+    order by id desc
+  </select>
+
+  <update id="updateHints" parameterType="java.lang.Long">
+    update tb_article
+    set
+    hints = hints + 1
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectTopN" parameterType="int" resultMap="BaseResultMap">
+    select distinct
+    <include refid="Base_Column_List" />
+    ,userName, categoryName
+    from tb_article inner join tb_user on user_sn=sn left join tb_category on cid=category_id
+    order by id desc
+    limit #{num}
+  </select>
+
+  <select id="selectTopNWithImage" parameterType="int" resultMap="BaseResultMap">
+    select distinct
+    id, category_id, title, show_image
+    from tb_article
+    where show_image is not null
+    order by id desc
+    limit #{num}
+  </select>
+
+  <select id="selectByTypeAndCid" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,userName, categoryName
+    from tb_article inner join tb_user on user_sn=sn left join tb_category on cid=category_id
+    <where>
+      <if test="cid != null">
+        category_id=#{cid}
+      </if>
+      <if test="type != null and keywords != null">
+        and ${type} LIKE CONCAT('%',#{keywords},'%')
+      </if>
+    </where>
+    order by id desc
+  </select>
+</mapper>
